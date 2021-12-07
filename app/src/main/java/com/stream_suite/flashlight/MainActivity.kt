@@ -1,9 +1,13 @@
 package com.stream_suite.flashlight
 
+import android.content.Intent
 import android.content.res.Configuration
+import android.os.Build
 import android.os.Bundle
+import android.provider.Settings
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.MaterialTheme
@@ -19,16 +23,33 @@ import androidx.compose.ui.unit.dp
 import com.stream_suite.flashlight.ui.theme.FlashlightTheme
 
 class MainActivity : ComponentActivity() {
+    private fun requestPermissions() {
+        val intent = Intent()
+        intent.action = Settings.ACTION_MANAGE_WRITE_SETTINGS
+        startActivity(intent)
+    }
+
+    @RequiresApi(Build.VERSION_CODES.M)
+    private fun setMaxBrightness() {
+        if (Settings.System.canWrite(this)) {
+            Settings.System.putInt(this.contentResolver, Settings.System.SCREEN_BRIGHTNESS, 255)
+        }
+        else {
+            requestPermissions()
+        }
+    }
+
+    @RequiresApi(Build.VERSION_CODES.M)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            Content()
+            Content(setMaxBrightness = { setMaxBrightness() })
         }
     }
 }
 
 @Composable
-fun Content() {
+fun Content(setMaxBrightness: () -> Unit) {
     FlashlightTheme {
         Surface(color = Color.White) {
             Column(
@@ -42,7 +63,8 @@ fun Content() {
                 OutlinedButton(
                     modifier = Modifier.fillMaxWidth(),
                     border = BorderStroke(1.dp, MaterialTheme.colors.primary),
-                    onClick = { /* Increase brightness */ }) {
+                    onClick = setMaxBrightness
+                ) {
                     Text("Max Brightness")
                 }
             }
@@ -55,5 +77,5 @@ fun Content() {
 @Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES, name = "Dark mode")
 @Composable
 fun DefaultPreview() {
-    Content()
+    Content(setMaxBrightness = {})
 }
