@@ -2,12 +2,10 @@ package com.stream_suite.flashlight
 
 import android.content.Intent
 import android.content.res.Configuration
-import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.annotation.RequiresApi
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.MaterialTheme
@@ -20,6 +18,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.core.view.WindowCompat
 import com.stream_suite.flashlight.ui.theme.FlashlightTheme
 
 class MainActivity : ComponentActivity() {
@@ -29,7 +28,6 @@ class MainActivity : ComponentActivity() {
         startActivity(intent)
     }
 
-    @RequiresApi(Build.VERSION_CODES.M)
     private fun setMaxBrightness() {
         if (Settings.System.canWrite(this)) {
             Settings.System.putInt(this.contentResolver, Settings.System.SCREEN_BRIGHTNESS, 255)
@@ -39,8 +37,8 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-    @RequiresApi(Build.VERSION_CODES.M)
     override fun onCreate(savedInstanceState: Bundle?) {
+        WindowCompat.setDecorFitsSystemWindows(window, false)
         super.onCreate(savedInstanceState)
         setContent {
             Content(setMaxBrightness = { setMaxBrightness() })
