@@ -1,5 +1,6 @@
 package com.stream_suite.flashlight
 
+import android.content.Context
 import android.content.Intent
 import android.content.res.Configuration
 import android.net.Uri
@@ -14,42 +15,33 @@ import androidx.compose.material.OutlinedButton
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.core.content.ContextCompat.startActivity
 import androidx.core.view.WindowCompat
 import com.stream_suite.flashlight.ui.theme.FlashlightTheme
 
 class MainActivity : ComponentActivity() {
-    private fun requestPermissions() {
-        val intent = Intent()
-        intent.action = Settings.ACTION_MANAGE_WRITE_SETTINGS
-        intent.data = Uri.parse("package:${this.packageName}")
-        startActivity(intent)
-    }
-
-    private fun setMaxBrightness() {
-        if (Settings.System.canWrite(this)) {
-            Settings.System.putInt(this.contentResolver, Settings.System.SCREEN_BRIGHTNESS, 255)
-        }
-        else {
-            requestPermissions()
-        }
-    }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         WindowCompat.setDecorFitsSystemWindows(window, false)
         super.onCreate(savedInstanceState)
         setContent {
-            Content(setMaxBrightness = { setMaxBrightness() })
+            Content()
         }
     }
 }
 
 @Composable
-fun Content(setMaxBrightness: () -> Unit) {
+fun Content() {
+    var previousBrightness = remember { mutableStateOf<Int?>(null) }
+    val context = LocalContext.current
     FlashlightTheme {
         Surface(color = Color.White) {
             Column(
@@ -63,7 +55,7 @@ fun Content(setMaxBrightness: () -> Unit) {
                 OutlinedButton(
                     modifier = Modifier.fillMaxWidth(),
                     border = BorderStroke(1.dp, MaterialTheme.colors.primary),
-                    onClick = setMaxBrightness
+                    onClick = { setMaxBrightness(context, previousBrightness) }
                 ) {
                     Text("Max Brightness")
                 }
@@ -72,10 +64,25 @@ fun Content(setMaxBrightness: () -> Unit) {
     }
 }
 
+fun requestPermissions(context: Context) {
+    val intent = Intent()
+    intent.action = Settings.ACTION_MANAGE_WRITE_SETTINGS
+    intent.data = Uri.parse("package:${context.packageName}")
+    startActivity(context, intent, null)
+}
+
+fun setMaxBrightness(context: Context, previousBrightness: MutableState<Int?>) {
+    if (Settings.System.canWrite(context)) {
+        Settings.System.putInt(context.contentResolver, Settings.System.SCREEN_BRIGHTNESS, 255)
+    } else {
+        requestPermissions(context)
+    }
+}
+
 // Preview should look the same in both dark and light mode
 @Preview(showBackground = true, name = "Light mode")
 @Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES, name = "Dark mode")
 @Composable
 fun DefaultPreview() {
-    Content(setMaxBrightness = {})
+    Content()
 }
