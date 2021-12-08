@@ -15,7 +15,6 @@ import androidx.compose.material.OutlinedButton
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -40,7 +39,7 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun Content() {
-    var previousBrightness = remember { mutableStateOf<Int?>(null) }
+    val (previousBrightness, setPreviousBrightness) = remember { mutableStateOf<Int?>(null) }
     val context = LocalContext.current
     FlashlightTheme {
         Surface(color = Color.White) {
@@ -55,9 +54,25 @@ fun Content() {
                 OutlinedButton(
                     modifier = Modifier.fillMaxWidth(),
                     border = BorderStroke(1.dp, MaterialTheme.colors.primary),
-                    onClick = { setMaxBrightness(context, previousBrightness) }
+                    onClick = { setBrightness(context, 255, setPreviousBrightness) }
                 ) {
                     Text("Max Brightness")
+                }
+                if (previousBrightness != null) {
+                    OutlinedButton(
+                        modifier = Modifier.fillMaxWidth(),
+                        border = BorderStroke(1.dp, MaterialTheme.colors.primary),
+                        onClick = {
+                            setBrightness(
+                                context,
+                                previousBrightness,
+                                setPreviousBrightness,
+                                true
+                            )
+                        }
+                    ) {
+                        Text("Restore Previous Brightness")
+                    }
                 }
             }
         }
@@ -71,9 +86,22 @@ fun requestPermissions(context: Context) {
     startActivity(context, intent, null)
 }
 
-fun setMaxBrightness(context: Context, previousBrightness: MutableState<Int?>) {
+fun setBrightness(
+    context: Context,
+    newValue: Int,
+    setPreviousBrightness: (Int?) -> Unit,
+    shouldClear: Boolean = false
+) {
     if (Settings.System.canWrite(context)) {
-        Settings.System.putInt(context.contentResolver, Settings.System.SCREEN_BRIGHTNESS, 255)
+        val contentResolver = context.contentResolver
+        val previousBrightness = when (shouldClear) {
+            true -> null
+            else -> Settings.System.getInt(
+                contentResolver, Settings.System.SCREEN_BRIGHTNESS
+            )
+        }
+        setPreviousBrightness(previousBrightness)
+        Settings.System.putInt(contentResolver, Settings.System.SCREEN_BRIGHTNESS, newValue)
     } else {
         requestPermissions(context)
     }
