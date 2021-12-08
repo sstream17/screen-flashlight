@@ -52,7 +52,7 @@ fun Content() {
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 OutlinedButton(
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier.padding(vertical = 8.dp).fillMaxWidth(),
                     border = BorderStroke(1.dp, MaterialTheme.colors.primary),
                     onClick = { setBrightness(context, 255, setPreviousBrightness) }
                 ) {
@@ -60,7 +60,7 @@ fun Content() {
                 }
                 if (previousBrightness != null) {
                     OutlinedButton(
-                        modifier = Modifier.fillMaxWidth(),
+                        modifier = Modifier.padding(vertical = 8.dp).fillMaxWidth(),
                         border = BorderStroke(1.dp, MaterialTheme.colors.primary),
                         onClick = {
                             setBrightness(
