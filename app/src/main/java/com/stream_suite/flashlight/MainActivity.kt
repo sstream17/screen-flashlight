@@ -2,6 +2,7 @@ package com.stream_suite.flashlight
 
 import android.content.Intent
 import android.content.res.Configuration
+import android.net.Uri
 import android.os.Bundle
 import android.provider.Settings
 import androidx.activity.ComponentActivity
@@ -25,6 +26,7 @@ class MainActivity : ComponentActivity() {
     private fun requestPermissions() {
         val intent = Intent()
         intent.action = Settings.ACTION_MANAGE_WRITE_SETTINGS
+        intent.data = Uri.parse("package:${this.packageName}")
         startActivity(intent)
     }
 
