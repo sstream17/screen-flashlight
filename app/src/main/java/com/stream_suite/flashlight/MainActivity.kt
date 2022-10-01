@@ -1,11 +1,11 @@
 package com.stream_suite.flashlight
 
+import android.app.Activity
 import android.content.Context
-import android.content.Intent
+import android.content.ContextWrapper
 import android.content.res.Configuration
-import android.net.Uri
 import android.os.Bundle
-import android.provider.Settings
+import android.view.Window
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.BorderStroke
@@ -23,9 +23,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.core.content.ContextCompat.startActivity
 import androidx.core.view.WindowCompat
 import com.stream_suite.flashlight.ui.theme.FlashlightTheme
+
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -39,8 +39,8 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun Content() {
-    val (previousBrightness, setPreviousBrightness) = remember { mutableStateOf<Int?>(null) }
-    val context = LocalContext.current
+    val (shouldRestore, setShouldRestore) = remember { mutableStateOf(false) }
+    val window = LocalContext.current.findActivity().window
     FlashlightTheme {
         Surface(color = Color.White) {
             Column(
@@ -52,22 +52,31 @@ fun Content() {
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 OutlinedButton(
-                    modifier = Modifier.padding(vertical = 8.dp).fillMaxWidth(),
+                    modifier = Modifier
+                        .padding(vertical = 8.dp)
+                        .fillMaxWidth(),
                     border = BorderStroke(1.dp, MaterialTheme.colors.primary),
-                    onClick = { setBrightness(context, 255, setPreviousBrightness) }
+                    onClick = {
+                        setBrightness(
+                            window,
+                            1F,
+                            setShouldRestore
+                        )
+                    }
                 ) {
                     Text("Max Brightness")
                 }
-                if (previousBrightness != null) {
+                if (shouldRestore) {
                     OutlinedButton(
-                        modifier = Modifier.padding(vertical = 8.dp).fillMaxWidth(),
+                        modifier = Modifier
+                            .padding(vertical = 8.dp)
+                            .fillMaxWidth(),
                         border = BorderStroke(1.dp, MaterialTheme.colors.primary),
                         onClick = {
                             setBrightness(
-                                context,
-                                previousBrightness,
-                                setPreviousBrightness,
-                                true
+                                window,
+                                -1F,
+                                setShouldRestore
                             )
                         }
                     ) {
@@ -79,32 +88,24 @@ fun Content() {
     }
 }
 
-fun requestPermissions(context: Context) {
-    val intent = Intent()
-    intent.action = Settings.ACTION_MANAGE_WRITE_SETTINGS
-    intent.data = Uri.parse("package:${context.packageName}")
-    startActivity(context, intent, null)
+fun setBrightness(
+    window: Window,
+    newValue: Float,
+    setShouldRestore: (Boolean) -> Unit,
+) {
+    setShouldRestore(newValue == 1F)
+    val lp = window.attributes
+    lp.screenBrightness = newValue
+    window.attributes = lp
 }
 
-fun setBrightness(
-    context: Context,
-    newValue: Int,
-    setPreviousBrightness: (Int?) -> Unit,
-    shouldClear: Boolean = false
-) {
-    if (Settings.System.canWrite(context)) {
-        val contentResolver = context.contentResolver
-        val previousBrightness = when (shouldClear) {
-            true -> null
-            else -> Settings.System.getInt(
-                contentResolver, Settings.System.SCREEN_BRIGHTNESS
-            )
-        }
-        setPreviousBrightness(previousBrightness)
-        Settings.System.putInt(contentResolver, Settings.System.SCREEN_BRIGHTNESS, newValue)
-    } else {
-        requestPermissions(context)
+internal fun Context.findActivity(): Activity {
+    var context = this
+    while (context is ContextWrapper) {
+        if (context is Activity) return context
+        context = context.baseContext
     }
+    throw IllegalStateException("Permissions should be called in the context of an Activity")
 }
 
 // Preview should look the same in both dark and light mode
