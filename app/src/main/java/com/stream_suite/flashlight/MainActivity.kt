@@ -10,10 +10,10 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.OutlinedButton
-import androidx.compose.material.Surface
-import androidx.compose.material.Text
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -55,7 +55,7 @@ fun Content() {
                     modifier = Modifier
                         .padding(vertical = 8.dp)
                         .fillMaxWidth(),
-                    border = BorderStroke(1.dp, MaterialTheme.colors.primary),
+                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary),
                     onClick = {
                         setBrightness(
                             window,
@@ -71,7 +71,7 @@ fun Content() {
                         modifier = Modifier
                             .padding(vertical = 8.dp)
                             .fillMaxWidth(),
-                        border = BorderStroke(1.dp, MaterialTheme.colors.primary),
+                        border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary),
                         onClick = {
                             setBrightness(
                                 window,

@@ -1,13 +1,15 @@
 package com.stream_suite.flashlight.ui.theme
 
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.lightColors
+import android.os.Build
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.dynamicLightColorScheme
+import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 
-private val colors = lightColors(
+private val staticColors = lightColorScheme(
     primary = Purple500,
-    primaryVariant = Purple700,
     secondary = Teal200,
     background = Color.White,
     surface = Color.White
@@ -21,9 +23,21 @@ private val colors = lightColors(
 )
 
 @Composable
-fun FlashlightTheme(content: @Composable () -> Unit) {
+fun FlashlightTheme(
+    isDynamicColor: Boolean = true,
+    content: @Composable () -> Unit
+) {
+    val dynamicColor = isDynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
+
+    val colors = when {
+        dynamicColor -> {
+            dynamicLightColorScheme(LocalContext.current)
+        }
+        else -> staticColors
+    }
+
     MaterialTheme(
-        colors = colors,
+        colorScheme = colors,
         typography = Typography,
         shapes = Shapes,
         content = content
