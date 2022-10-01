@@ -38,9 +38,9 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun Content() {
+fun Content(activity: Activity = LocalContext.current.findActivity()) {
     val (shouldRestore, setShouldRestore) = remember { mutableStateOf(false) }
-    val window = LocalContext.current.findActivity().window
+    val window = activity.window
     FlashlightTheme {
         Surface(color = Color.White) {
             Column(
@@ -100,12 +100,12 @@ fun setBrightness(
 }
 
 internal fun Context.findActivity(): Activity {
-    var context = this
+    val context = this
     while (context is ContextWrapper) {
         if (context is Activity) return context
-        context = context.baseContext
     }
-    throw IllegalStateException("Permissions should be called in the context of an Activity")
+
+    throw IllegalStateException("Cannot find activity for given context")
 }
 
 // Preview should look the same in both dark and light mode
@@ -113,5 +113,5 @@ internal fun Context.findActivity(): Activity {
 @Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES, name = "Dark mode")
 @Composable
 fun DefaultPreview() {
-    Content()
+    Content(Activity())
 }
