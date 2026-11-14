@@ -1,17 +1,4 @@
 <resources>
     <!-- Base application theme. -->
-    <style name="Theme.Flashlight" parent="android:Theme.Material.Light.NoActionBar">
-        <item name="android:windowLightStatusBar">true</item>
-        <item name="android:statusBarColor" >@android:color/transparent</item>
-        <item name="android:navigationBarColor">@android:color/transparent</item>
-    </style>
-
-    <style name="Theme.Flashlight.NoActionBar">
-        <item name="android:windowActionBar">false</item>
-        <item name="android:windowNoTitle">true</item>
-    </style>
-
-    <style name="Theme.Flashlight.AppBarOverlay" parent="android:ThemeOverlay.Material.Light" />
-
-    <style name="Theme.Flashlight.PopupOverlay" parent="android:ThemeOverlay.Material.Light" />
+    <style name="Theme.Flashlight" parent="android:Theme.Material.Light.NoActionBar" />
 </resources>
