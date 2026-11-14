@@ -35,8 +35,8 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         WindowCompat.enableEdgeToEdge(window)
-        WindowCompat.getInsetsController(window, window.decorView)
-            .isAppearanceLightStatusBars = true
+        WindowCompat.getInsetsController(window, window.decorView).isAppearanceLightStatusBars =
+            true
         setContent {
             Content()
         }
@@ -64,30 +64,23 @@ fun Content(activity: Activity = LocalContext.current.findActivity()) {
                     border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary),
                     onClick = {
                         setBrightness(
-                            window,
-                            1F,
-                            setShouldRestore
+                            window, 1F, setShouldRestore
                         )
-                    }
-                ) {
+                    }) {
                     Text("Max Brightness")
                 }
-                if (shouldRestore) {
-                    OutlinedButton(
-                        modifier = Modifier
-                            .padding(vertical = 8.dp)
-                            .fillMaxWidth(),
-                        border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary),
-                        onClick = {
-                            setBrightness(
-                                window,
-                                -1F,
-                                setShouldRestore
-                            )
-                        }
-                    ) {
-                        Text("Restore Previous Brightness")
-                    }
+                OutlinedButton(
+                    modifier = Modifier
+                        .padding(vertical = 8.dp)
+                        .fillMaxWidth(),
+                    enabled = shouldRestore,
+                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary),
+                    onClick = {
+                        setBrightness(
+                            window, -1F, setShouldRestore
+                        )
+                    }) {
+                    Text("Restore Previous Brightness")
                 }
             }
         }
