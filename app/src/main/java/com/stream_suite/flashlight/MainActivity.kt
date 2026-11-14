@@ -88,12 +88,12 @@ fun Content(activity: Activity = LocalContext.current.findActivity()) {
                         modifier = Modifier.weight(1f),
                         value = sliderPosition,
                         valueRange = MIN_BRIGHTNESS..MAX_BRIGHTNESS,
-                        onValueChange = { sliderPosition = it },
-                        onValueChangeFinished = {
+                        onValueChange = { new ->
                             setBrightness(
-                                window, sliderPosition,
-                            )
-                        })
+                                window, new,
+                            ) { sliderPosition = new }
+                        },
+                    )
                     Spacer(Modifier.weight(0.1f))
                     OutlinedButton(
                         border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary),
