@@ -11,9 +11,13 @@ import androidx.activity.compose.setContent
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Slider
@@ -56,30 +60,53 @@ fun Content(activity: Activity = LocalContext.current.findActivity()) {
                 modifier = Modifier
                     .fillMaxWidth()
                     .fillMaxHeight()
-                    .padding(32.dp),
+                    .padding(16.dp),
                 verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally
+                horizontalAlignment = Alignment.CenterHorizontally,
             ) {
-                Slider(
-                    value = sliderPosition,
-                    valueRange = 0.01f..1f,
-                    onValueChange = { sliderPosition = it },
-                    onValueChangeFinished = {
-                        setBrightness(
-                            window, sliderPosition,
-                        )
-                    })
-                OutlinedButton(
+                Row(
                     modifier = Modifier
-                        .padding(vertical = 8.dp)
-                        .fillMaxWidth(),
-                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary),
-                    onClick = {
-                        setBrightness(
-                            window, 1F,
-                        ) { sliderPosition = it }
-                    }) {
-                    Text("Max Brightness")
+                        .fillMaxWidth()
+                        .padding(4.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    OutlinedButton(
+                        border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary),
+                        modifier = Modifier.size(40.dp),
+                        contentPadding = PaddingValues(8.dp),
+                        onClick = {
+                            setBrightness(
+                                window, 0.01F,
+                            ) { sliderPosition = it }
+                        },
+                    ) {
+                        Text("-")
+                    }
+                    Spacer(Modifier.weight(0.1f))
+                    Slider(
+                        modifier = Modifier.weight(1f),
+                        value = sliderPosition,
+                        valueRange = 0.01f..1f,
+                        onValueChange = { sliderPosition = it },
+                        onValueChangeFinished = {
+                            setBrightness(
+                                window, sliderPosition,
+                            )
+                        })
+                    Spacer(Modifier.weight(0.1f))
+                    OutlinedButton(
+                        border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary),
+                        modifier = Modifier.size(40.dp),
+                        contentPadding = PaddingValues(8.dp),
+                        onClick = {
+                            setBrightness(
+                                window, 1F,
+                            ) { sliderPosition = it }
+                        },
+                    ) {
+                        Text("+")
+                    }
                 }
                 OutlinedButton(
                     modifier = Modifier
