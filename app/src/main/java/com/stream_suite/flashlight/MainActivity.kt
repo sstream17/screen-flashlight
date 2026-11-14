@@ -138,7 +138,7 @@ fun setBrightness(
 internal fun Context.findActivity(): Activity {
     val context = this
     while (context is ContextWrapper) {
-        if (context is Activity) return context
+        (context as? Activity)?.let { return it }
     }
 
     throw IllegalStateException("Cannot find activity for given context")
