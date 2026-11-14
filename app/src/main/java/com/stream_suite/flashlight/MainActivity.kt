@@ -52,7 +52,7 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun Content(activity: Activity = LocalContext.current.findActivity()) {
-    var sliderPosition by remember { mutableFloatStateOf(DEFAULT_BRIGHTNESS) }
+    var brightness by remember { mutableFloatStateOf(DEFAULT_BRIGHTNESS) }
     val window = activity.window
     FlashlightTheme {
         Surface(color = Color.White) {
@@ -78,7 +78,7 @@ fun Content(activity: Activity = LocalContext.current.findActivity()) {
                         onClick = {
                             setBrightness(
                                 window, MIN_BRIGHTNESS,
-                            ) { sliderPosition = it }
+                            ) { brightness = it }
                         },
                     ) {
                         Text("-")
@@ -86,12 +86,12 @@ fun Content(activity: Activity = LocalContext.current.findActivity()) {
                     Spacer(Modifier.weight(0.1f))
                     Slider(
                         modifier = Modifier.weight(1f),
-                        value = sliderPosition,
+                        value = brightness,
                         valueRange = MIN_BRIGHTNESS..MAX_BRIGHTNESS,
                         onValueChange = { new ->
                             setBrightness(
                                 window, new,
-                            ) { sliderPosition = new }
+                            ) { brightness = new }
                         },
                     )
                     Spacer(Modifier.weight(0.1f))
@@ -102,7 +102,7 @@ fun Content(activity: Activity = LocalContext.current.findActivity()) {
                         onClick = {
                             setBrightness(
                                 window, MAX_BRIGHTNESS,
-                            ) { sliderPosition = it }
+                            ) { brightness = it }
                         },
                     ) {
                         Text("+")
@@ -112,12 +112,12 @@ fun Content(activity: Activity = LocalContext.current.findActivity()) {
                     modifier = Modifier
                         .padding(vertical = 8.dp)
                         .fillMaxWidth(),
-                    enabled = sliderPosition != DEFAULT_BRIGHTNESS,
+                    enabled = brightness != DEFAULT_BRIGHTNESS,
                     border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary),
                     onClick = {
                         setBrightness(
                             window, DEFAULT_BRIGHTNESS,
-                        ) { sliderPosition = it }
+                        ) { brightness = it }
                     }) {
                     Text("Restore Previous Brightness")
                 }
@@ -129,9 +129,9 @@ fun Content(activity: Activity = LocalContext.current.findActivity()) {
 fun setBrightness(
     window: Window,
     newValue: Float,
-    setSliderPosition: ((Float) -> Unit)? = null,
+    setBrightness: ((Float) -> Unit)? = null,
 ) {
-    setSliderPosition?.invoke(newValue)
+    setBrightness?.invoke(newValue)
     window.attributes = window.attributes.apply { screenBrightness = newValue }
 }
 
