@@ -52,7 +52,7 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun Content(activity: Activity = LocalContext.current.findActivity()) {
-    var sliderPosition by remember { mutableFloatStateOf(-1f) }
+    var sliderPosition by remember { mutableFloatStateOf(DEFAULT_BRIGHTNESS) }
     val window = activity.window
     FlashlightTheme {
         Surface(color = Color.White) {
@@ -77,7 +77,7 @@ fun Content(activity: Activity = LocalContext.current.findActivity()) {
                         contentPadding = PaddingValues(8.dp),
                         onClick = {
                             setBrightness(
-                                window, 0.01F,
+                                window, MIN_BRIGHTNESS,
                             ) { sliderPosition = it }
                         },
                     ) {
@@ -87,7 +87,7 @@ fun Content(activity: Activity = LocalContext.current.findActivity()) {
                     Slider(
                         modifier = Modifier.weight(1f),
                         value = sliderPosition,
-                        valueRange = 0.01f..1f,
+                        valueRange = MIN_BRIGHTNESS..MAX_BRIGHTNESS,
                         onValueChange = { sliderPosition = it },
                         onValueChangeFinished = {
                             setBrightness(
@@ -101,7 +101,7 @@ fun Content(activity: Activity = LocalContext.current.findActivity()) {
                         contentPadding = PaddingValues(8.dp),
                         onClick = {
                             setBrightness(
-                                window, 1F,
+                                window, MAX_BRIGHTNESS,
                             ) { sliderPosition = it }
                         },
                     ) {
@@ -112,11 +112,11 @@ fun Content(activity: Activity = LocalContext.current.findActivity()) {
                     modifier = Modifier
                         .padding(vertical = 8.dp)
                         .fillMaxWidth(),
-                    enabled = sliderPosition != -1f,
+                    enabled = sliderPosition != DEFAULT_BRIGHTNESS,
                     border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary),
                     onClick = {
                         setBrightness(
-                            window, -1F,
+                            window, DEFAULT_BRIGHTNESS,
                         ) { sliderPosition = it }
                     }) {
                     Text("Restore Previous Brightness")
