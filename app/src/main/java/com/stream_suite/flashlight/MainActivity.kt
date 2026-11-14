@@ -16,11 +16,14 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.Slider
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -45,7 +48,7 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun Content(activity: Activity = LocalContext.current.findActivity()) {
-    val (shouldRestore, setShouldRestore) = remember { mutableStateOf(false) }
+    var sliderPosition by remember { mutableFloatStateOf(-1f) }
     val window = activity.window
     FlashlightTheme {
         Surface(color = Color.White) {
@@ -57,6 +60,15 @@ fun Content(activity: Activity = LocalContext.current.findActivity()) {
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
+                Slider(
+                    value = sliderPosition,
+                    valueRange = 0.01f..1f,
+                    onValueChange = { sliderPosition = it },
+                    onValueChangeFinished = {
+                        setBrightness(
+                            window, sliderPosition,
+                        )
+                    })
                 OutlinedButton(
                     modifier = Modifier
                         .padding(vertical = 8.dp)
@@ -64,8 +76,8 @@ fun Content(activity: Activity = LocalContext.current.findActivity()) {
                     border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary),
                     onClick = {
                         setBrightness(
-                            window, 1F, setShouldRestore
-                        )
+                            window, 1F,
+                        ) { sliderPosition = it }
                     }) {
                     Text("Max Brightness")
                 }
@@ -73,12 +85,12 @@ fun Content(activity: Activity = LocalContext.current.findActivity()) {
                     modifier = Modifier
                         .padding(vertical = 8.dp)
                         .fillMaxWidth(),
-                    enabled = shouldRestore,
+                    enabled = sliderPosition != -1f,
                     border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary),
                     onClick = {
                         setBrightness(
-                            window, -1F, setShouldRestore
-                        )
+                            window, -1F,
+                        ) { sliderPosition = it }
                     }) {
                     Text("Restore Previous Brightness")
                 }
@@ -90,12 +102,10 @@ fun Content(activity: Activity = LocalContext.current.findActivity()) {
 fun setBrightness(
     window: Window,
     newValue: Float,
-    setShouldRestore: (Boolean) -> Unit,
+    setSliderPosition: ((Float) -> Unit)? = null,
 ) {
-    setShouldRestore(newValue == 1F)
-    val lp = window.attributes
-    lp.screenBrightness = newValue
-    window.attributes = lp
+    setSliderPosition?.invoke(newValue)
+    window.attributes = window.attributes.apply { screenBrightness = newValue }
 }
 
 internal fun Context.findActivity(): Activity {
