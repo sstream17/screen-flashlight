@@ -9,7 +9,11 @@ import android.view.Window
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Surface
@@ -29,8 +33,10 @@ import com.stream_suite.flashlight.ui.theme.FlashlightTheme
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
-        WindowCompat.setDecorFitsSystemWindows(window, false)
         super.onCreate(savedInstanceState)
+        WindowCompat.enableEdgeToEdge(window)
+        WindowCompat.getInsetsController(window, window.decorView).isAppearanceLightStatusBars =
+            true
         setContent {
             Content()
         }
@@ -58,30 +64,23 @@ fun Content(activity: Activity = LocalContext.current.findActivity()) {
                     border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary),
                     onClick = {
                         setBrightness(
-                            window,
-                            1F,
-                            setShouldRestore
+                            window, 1F, setShouldRestore
                         )
-                    }
-                ) {
+                    }) {
                     Text("Max Brightness")
                 }
-                if (shouldRestore) {
-                    OutlinedButton(
-                        modifier = Modifier
-                            .padding(vertical = 8.dp)
-                            .fillMaxWidth(),
-                        border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary),
-                        onClick = {
-                            setBrightness(
-                                window,
-                                -1F,
-                                setShouldRestore
-                            )
-                        }
-                    ) {
-                        Text("Restore Previous Brightness")
-                    }
+                OutlinedButton(
+                    modifier = Modifier
+                        .padding(vertical = 8.dp)
+                        .fillMaxWidth(),
+                    enabled = shouldRestore,
+                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary),
+                    onClick = {
+                        setBrightness(
+                            window, -1F, setShouldRestore
+                        )
+                    }) {
+                    Text("Restore Previous Brightness")
                 }
             }
         }
