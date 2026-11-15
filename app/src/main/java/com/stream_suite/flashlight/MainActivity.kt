@@ -37,6 +37,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.view.WindowCompat
+import com.stream_suite.flashlight.BrightnessUtils.convertGammaToLinear
 import com.stream_suite.flashlight.ui.icons.MaxBrightness
 import com.stream_suite.flashlight.ui.icons.MinBrightness
 import com.stream_suite.flashlight.ui.theme.FlashlightTheme
@@ -56,7 +57,7 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun Content(activity: Activity = LocalContext.current.findActivity()) {
-    var brightness by remember { mutableFloatStateOf(DEFAULT_BRIGHTNESS) }
+    var brightnessGamma by remember { mutableFloatStateOf(DEFAULT_BRIGHTNESS) }
     val window = activity.window
     FlashlightTheme {
         Surface(color = Color.White) {
@@ -80,7 +81,7 @@ fun Content(activity: Activity = LocalContext.current.findActivity()) {
                         onClick = {
                             setBrightness(
                                 window, MIN_BRIGHTNESS,
-                            ) { brightness = it }
+                            ) { brightnessGamma = it }
                         },
                     ) {
                         Icon(
@@ -91,12 +92,12 @@ fun Content(activity: Activity = LocalContext.current.findActivity()) {
                     Spacer(Modifier.width(16.dp))
                     Slider(
                         modifier = Modifier.weight(1f),
-                        value = brightness,
+                        value = brightnessGamma,
                         valueRange = MIN_BRIGHTNESS..MAX_BRIGHTNESS,
                         onValueChange = { newValue ->
                             setBrightness(
                                 window, newValue,
-                            ) { brightness = newValue }
+                            ) { brightnessGamma = newValue }
                         },
                     )
                     Spacer(Modifier.width(16.dp))
@@ -107,7 +108,7 @@ fun Content(activity: Activity = LocalContext.current.findActivity()) {
                         onClick = {
                             setBrightness(
                                 window, MAX_BRIGHTNESS,
-                            ) { brightness = it }
+                            ) { brightnessGamma = it }
                         },
                     ) {
                         Icon(
@@ -120,12 +121,12 @@ fun Content(activity: Activity = LocalContext.current.findActivity()) {
                     modifier = Modifier
                         .padding(vertical = 8.dp)
                         .fillMaxWidth(),
-                    enabled = brightness != DEFAULT_BRIGHTNESS,
+                    enabled = brightnessGamma != DEFAULT_BRIGHTNESS,
                     border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary),
                     onClick = {
                         setBrightness(
                             window, DEFAULT_BRIGHTNESS,
-                        ) { brightness = it }
+                        ) { brightnessGamma = it }
                     }) {
                     Text("Restore Previous Brightness")
                 }
@@ -136,11 +137,12 @@ fun Content(activity: Activity = LocalContext.current.findActivity()) {
 
 fun setBrightness(
     window: Window,
-    newValue: Float,
+    newGammaValue: Float,
     setBrightness: ((Float) -> Unit)? = null,
 ) {
-    setBrightness?.invoke(newValue)
-    window.attributes = window.attributes.apply { screenBrightness = newValue }
+    setBrightness?.invoke(newGammaValue)
+    val linearBrightness = convertGammaToLinear(newGammaValue)
+    window.attributes = window.attributes.apply { screenBrightness = linearBrightness }
 }
 
 internal fun Context.findActivity(): Activity {
