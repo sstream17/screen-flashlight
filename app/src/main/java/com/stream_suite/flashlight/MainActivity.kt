@@ -11,16 +11,25 @@ import androidx.activity.compose.setContent
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.Slider
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -28,6 +37,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.view.WindowCompat
+import com.stream_suite.flashlight.ui.icons.MaxBrightness
+import com.stream_suite.flashlight.ui.icons.MinBrightness
 import com.stream_suite.flashlight.ui.theme.FlashlightTheme
 
 
@@ -45,7 +56,7 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun Content(activity: Activity = LocalContext.current.findActivity()) {
-    val (shouldRestore, setShouldRestore) = remember { mutableStateOf(false) }
+    var brightness by remember { mutableFloatStateOf(DEFAULT_BRIGHTNESS) }
     val window = activity.window
     FlashlightTheme {
         Surface(color = Color.White) {
@@ -53,32 +64,68 @@ fun Content(activity: Activity = LocalContext.current.findActivity()) {
                 modifier = Modifier
                     .fillMaxWidth()
                     .fillMaxHeight()
-                    .padding(32.dp),
+                    .padding(16.dp),
                 verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally
+                horizontalAlignment = Alignment.CenterHorizontally,
             ) {
-                OutlinedButton(
-                    modifier = Modifier
-                        .padding(vertical = 8.dp)
-                        .fillMaxWidth(),
-                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary),
-                    onClick = {
-                        setBrightness(
-                            window, 1F, setShouldRestore
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    OutlinedButton(
+                        border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary),
+                        modifier = Modifier.size(40.dp),
+                        contentPadding = PaddingValues(8.dp),
+                        onClick = {
+                            setBrightness(
+                                window, MIN_BRIGHTNESS,
+                            ) { brightness = it }
+                        },
+                    ) {
+                        Icon(
+                            imageVector = MinBrightness,
+                            contentDescription = "Minimum brightness",
                         )
-                    }) {
-                    Text("Max Brightness")
+                    }
+                    Spacer(Modifier.width(16.dp))
+                    Slider(
+                        modifier = Modifier.weight(1f),
+                        value = brightness,
+                        valueRange = MIN_BRIGHTNESS..MAX_BRIGHTNESS,
+                        onValueChange = { newValue ->
+                            setBrightness(
+                                window, newValue,
+                            ) { brightness = newValue }
+                        },
+                    )
+                    Spacer(Modifier.width(16.dp))
+                    OutlinedButton(
+                        border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary),
+                        modifier = Modifier.size(40.dp),
+                        contentPadding = PaddingValues(8.dp),
+                        onClick = {
+                            setBrightness(
+                                window, MAX_BRIGHTNESS,
+                            ) { brightness = it }
+                        },
+                    ) {
+                        Icon(
+                            imageVector = MaxBrightness,
+                            contentDescription = "Maximum brightness",
+                        )
+                    }
                 }
                 OutlinedButton(
                     modifier = Modifier
                         .padding(vertical = 8.dp)
                         .fillMaxWidth(),
-                    enabled = shouldRestore,
+                    enabled = brightness != DEFAULT_BRIGHTNESS,
                     border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary),
                     onClick = {
                         setBrightness(
-                            window, -1F, setShouldRestore
-                        )
+                            window, DEFAULT_BRIGHTNESS,
+                        ) { brightness = it }
                     }) {
                     Text("Restore Previous Brightness")
                 }
@@ -90,18 +137,16 @@ fun Content(activity: Activity = LocalContext.current.findActivity()) {
 fun setBrightness(
     window: Window,
     newValue: Float,
-    setShouldRestore: (Boolean) -> Unit,
+    setBrightness: ((Float) -> Unit)? = null,
 ) {
-    setShouldRestore(newValue == 1F)
-    val lp = window.attributes
-    lp.screenBrightness = newValue
-    window.attributes = lp
+    setBrightness?.invoke(newValue)
+    window.attributes = window.attributes.apply { screenBrightness = newValue }
 }
 
 internal fun Context.findActivity(): Activity {
     val context = this
     while (context is ContextWrapper) {
-        if (context is Activity) return context
+        (context as? Activity)?.let { return it }
     }
 
     throw IllegalStateException("Cannot find activity for given context")
