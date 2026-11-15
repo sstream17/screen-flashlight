@@ -18,6 +18,7 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
@@ -89,7 +90,7 @@ fun Content(activity: Activity = LocalContext.current.findActivity()) {
                             contentDescription = "Minimum brightness",
                         )
                     }
-                    Spacer(Modifier.weight(0.1f))
+                    Spacer(Modifier.width(16.dp))
                     Slider(
                         modifier = Modifier.weight(1f),
                         value = brightness,
@@ -100,7 +101,7 @@ fun Content(activity: Activity = LocalContext.current.findActivity()) {
                             ) { brightness = new }
                         },
                     )
-                    Spacer(Modifier.weight(0.1f))
+                    Spacer(Modifier.width(16.dp))
                     OutlinedButton(
                         border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary),
                         modifier = Modifier.size(40.dp),
