@@ -93,10 +93,10 @@ fun Content(activity: Activity = LocalContext.current.findActivity()) {
                         modifier = Modifier.weight(1f),
                         value = brightness,
                         valueRange = MIN_BRIGHTNESS..MAX_BRIGHTNESS,
-                        onValueChange = { new ->
+                        onValueChange = { newValue ->
                             setBrightness(
-                                window, new,
-                            ) { brightness = new }
+                                window, newValue,
+                            ) { brightness = newValue }
                         },
                     )
                     Spacer(Modifier.width(16.dp))
