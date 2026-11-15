@@ -18,6 +18,7 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Slider
@@ -35,6 +36,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.view.WindowCompat
+import com.stream_suite.flashlight.ui.icons.MaxBrightness
+import com.stream_suite.flashlight.ui.icons.MinBrightness
 import com.stream_suite.flashlight.ui.theme.FlashlightTheme
 
 
@@ -81,7 +84,10 @@ fun Content(activity: Activity = LocalContext.current.findActivity()) {
                             ) { brightness = it }
                         },
                     ) {
-                        Text("-")
+                        Icon(
+                            imageVector = MinBrightness,
+                            contentDescription = "Minimum brightness",
+                        )
                     }
                     Spacer(Modifier.weight(0.1f))
                     Slider(
@@ -105,7 +111,10 @@ fun Content(activity: Activity = LocalContext.current.findActivity()) {
                             ) { brightness = it }
                         },
                     ) {
-                        Text("+")
+                        Icon(
+                            imageVector = MaxBrightness,
+                            contentDescription = "Maximum brightness",
+                        )
                     }
                 }
                 OutlinedButton(
