@@ -7,13 +7,13 @@ import org.junit.Assert.*
 
 class BrightnessUtilsTests {
     @Test
-    fun convertGammaToLinear_1fReturns1f() {
+    fun `convertGammaToLinear 1f returns 1f`() {
         val linear = convertGammaToLinear(1f)
         assertEquals(1f, linear)
     }
 
     @Test
-    fun convertGammaToLinear_negative1fDoesntReturnNegative1f() {
+    fun `convertGammaToLinear -1f doesn't return -1f`() {
         val linear = convertGammaToLinear(-1f)
         assertNotEquals(-1f, linear)
     }
