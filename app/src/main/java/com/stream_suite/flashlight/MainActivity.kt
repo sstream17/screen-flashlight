@@ -79,8 +79,8 @@ fun Content(activity: Activity = LocalContext.current.findActivity()) {
                         modifier = Modifier.size(40.dp),
                         contentPadding = PaddingValues(8.dp),
                         onClick = {
-                            setBrightness(
-                                window, MIN_BRIGHTNESS,
+                            setWindowBrightness(
+                                window, convertGammaToLinear(MIN_BRIGHTNESS),
                             ) { brightnessGamma = it }
                         },
                     ) {
@@ -95,8 +95,8 @@ fun Content(activity: Activity = LocalContext.current.findActivity()) {
                         value = brightnessGamma,
                         valueRange = MIN_BRIGHTNESS..MAX_BRIGHTNESS,
                         onValueChange = { newValue ->
-                            setBrightness(
-                                window, newValue,
+                            setWindowBrightness(
+                                window, convertGammaToLinear(newValue),
                             ) { brightnessGamma = newValue }
                         },
                     )
@@ -106,7 +106,7 @@ fun Content(activity: Activity = LocalContext.current.findActivity()) {
                         modifier = Modifier.size(40.dp),
                         contentPadding = PaddingValues(8.dp),
                         onClick = {
-                            setBrightness(
+                            setWindowBrightness(
                                 window, MAX_BRIGHTNESS,
                             ) { brightnessGamma = it }
                         },
@@ -124,7 +124,7 @@ fun Content(activity: Activity = LocalContext.current.findActivity()) {
                     enabled = brightnessGamma != DEFAULT_BRIGHTNESS,
                     border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary),
                     onClick = {
-                        setBrightness(
+                        setWindowBrightness(
                             window, DEFAULT_BRIGHTNESS,
                         ) { brightnessGamma = it }
                     }) {
@@ -135,14 +135,17 @@ fun Content(activity: Activity = LocalContext.current.findActivity()) {
     }
 }
 
-fun setBrightness(
+/**
+ * Set the [android.view.WindowManager.LayoutParams.screenBrightness] using [newLinearValue] in the
+ * linear space
+ */
+fun setWindowBrightness(
     window: Window,
-    newGammaValue: Float,
-    setBrightness: ((Float) -> Unit)? = null,
+    newLinearValue: Float,
+    setSliderPosition: ((Float) -> Unit)? = null,
 ) {
-    setBrightness?.invoke(newGammaValue)
-    val linearBrightness = convertGammaToLinear(newGammaValue)
-    window.attributes = window.attributes.apply { screenBrightness = linearBrightness }
+    setSliderPosition?.invoke(newLinearValue)
+    window.attributes = window.attributes.apply { screenBrightness = newLinearValue }
 }
 
 internal fun Context.findActivity(): Activity {
