@@ -57,7 +57,7 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun Content(activity: Activity = LocalContext.current.findActivity()) {
-    var brightnessGamma by remember { mutableFloatStateOf(DEFAULT_BRIGHTNESS) }
+    var brightnessGamma by remember { mutableFloatStateOf(DEFAULT_BRIGHTNESS_LINEAR) }
     val window = activity.window
     FlashlightTheme {
         Surface(color = Color.White) {
@@ -80,7 +80,7 @@ fun Content(activity: Activity = LocalContext.current.findActivity()) {
                         contentPadding = PaddingValues(8.dp),
                         onClick = {
                             setWindowBrightness(
-                                window, convertGammaToLinear(MIN_BRIGHTNESS),
+                                window, convertGammaToLinear(MIN_BRIGHTNESS_GAMMA),
                             ) { brightnessGamma = it }
                         },
                     ) {
@@ -93,7 +93,7 @@ fun Content(activity: Activity = LocalContext.current.findActivity()) {
                     Slider(
                         modifier = Modifier.weight(1f),
                         value = brightnessGamma,
-                        valueRange = MIN_BRIGHTNESS..MAX_BRIGHTNESS,
+                        valueRange = MIN_BRIGHTNESS_GAMMA..MAX_BRIGHTNESS_GAMMA,
                         onValueChange = { newValue ->
                             setWindowBrightness(
                                 window, convertGammaToLinear(newValue),
@@ -107,7 +107,7 @@ fun Content(activity: Activity = LocalContext.current.findActivity()) {
                         contentPadding = PaddingValues(8.dp),
                         onClick = {
                             setWindowBrightness(
-                                window, MAX_BRIGHTNESS,
+                                window, MAX_BRIGHTNESS_LINEAR,
                             ) { brightnessGamma = it }
                         },
                     ) {
@@ -121,11 +121,11 @@ fun Content(activity: Activity = LocalContext.current.findActivity()) {
                     modifier = Modifier
                         .padding(vertical = 8.dp)
                         .fillMaxWidth(),
-                    enabled = brightnessGamma != DEFAULT_BRIGHTNESS,
+                    enabled = brightnessGamma != DEFAULT_BRIGHTNESS_LINEAR,
                     border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary),
                     onClick = {
                         setWindowBrightness(
-                            window, DEFAULT_BRIGHTNESS,
+                            window, DEFAULT_BRIGHTNESS_LINEAR,
                         ) { brightnessGamma = it }
                     }) {
                     Text("Restore Previous Brightness")
