@@ -15,8 +15,8 @@ android {
         applicationId = "com.stream_suite.flashlight"
         minSdk = 23
         targetSdk = 37
-        versionCode = 4
-        versionName = "2.1.1"
+        versionCode = 5
+        versionName = "2.1.2"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
