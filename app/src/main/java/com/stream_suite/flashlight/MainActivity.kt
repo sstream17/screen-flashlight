@@ -81,7 +81,7 @@ fun Content(activity: Activity = LocalContext.current.findActivity()) {
                         onClick = {
                             setWindowBrightness(
                                 window, convertGammaToLinear(MIN_BRIGHTNESS_GAMMA),
-                            ) { brightnessGamma = it }
+                            ) { brightnessGamma = MIN_BRIGHTNESS_GAMMA }
                         },
                     ) {
                         Icon(
@@ -108,7 +108,7 @@ fun Content(activity: Activity = LocalContext.current.findActivity()) {
                         onClick = {
                             setWindowBrightness(
                                 window, MAX_BRIGHTNESS_LINEAR,
-                            ) { brightnessGamma = it }
+                            ) { brightnessGamma = MAX_BRIGHTNESS_GAMMA }
                         },
                     ) {
                         Icon(
